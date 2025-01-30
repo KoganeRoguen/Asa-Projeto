@@ -1,0 +1,49 @@
+services:
+
+  wordpress-1:
+    image: wordpress
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: user
+      WORDPRESS_DB_PASSWORD: 123
+      WORDPRESS_DB_NAME: db
+    volumes:
+      - wordpress-1:/var/www/html
+    networks:
+      - cliente-1
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: 123
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - cliente-1
+  
+  proxy-cliente-1:
+    build:
+      context: ./proxy
+      dockerfile: Dockerfile
+    container_name: proxy-cliente-1
+    networks:
+      - cliente-1
+    ports:
+      - "443:443/tcp"
+    depends_on:
+      - wordpress-1
+
+volumes:
+  wordpress-1:
+  db:
+
+networks:
+  cliente-1:
+    driver: bridge

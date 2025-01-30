@@ -1,0 +1,49 @@
+services:
+
+
+  dns:
+    build:
+      context: ./dns
+      dockerfile: Dockerfile
+    container_name: dns
+    ports:
+      - "53:53/udp"
+  
+  proxy:
+    build:
+      context: ./proxy
+      dockerfile: Dockerfile
+    container_name: proxy
+    networks:
+      - provedor
+    ports:
+      - "80:80/tcp"
+    depends_on:
+      - asa-mail
+
+  asa-mail:
+    build:
+      context: ./mail
+      dockerfile: Dockerfile
+    ports: 
+      - "25:25/tcp"
+      - "587:587/tcp"
+      - "110:110/tcp"
+      - "143:143/tcp"
+    container_name: asa-mail
+    networks:
+      - provedor
+    volumes: 
+      - mail:/var/mail
+
+
+volumes:
+  mail:
+    
+
+
+
+
+networks:
+  provedor:
+    driver: bridge

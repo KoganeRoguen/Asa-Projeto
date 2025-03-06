@@ -1,20 +1,21 @@
 services:
 
-  wordpress:
+  wordpress-1-2:
     image: wordpress
     restart: always
-    ports:
-      - 8080:80
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: user
       WORDPRESS_DB_PASSWORD: 123
       WORDPRESS_DB_NAME: db
     volumes:
-      - wordpress:/var/www/html
+      - ./1/wordpress:/var/www/html
+    networks:
+      - cliente-2
+      - rede-proxy
 
   db:
-    image: mysql:8.0
+    image: pedrodb:10.6.4-focal
     restart: always
     environment:
       MYSQL_DATABASE: db
@@ -22,8 +23,67 @@ services:
       MYSQL_PASSWORD: 123
       MYSQL_RANDOM_ROOT_PASSWORD: '1'
     volumes:
-      - db:/var/lib/mysql
+      - ./1/pedro:/var/lib/mysql
+    networks:
+      - cliente-2
+      - rede-proxy
+  db2:
+    image: pedrodb:10.6.4-focal
+    restart: always
+    environment:
+      MYSQL_DATABASE: db2
+      MYSQL_USER: user
+      MYSQL_PASSWORD: 123
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - ./2/pedro:/var/lib/mysql
+    networks:
+      - cliente-2
+      - rede-proxy
+
+  wordpress-2-2:
+    image: wordpress
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: db2
+      WORDPRESS_DB_USER: user
+      WORDPRESS_DB_PASSWORD: 123
+      WORDPRESS_DB_NAME: db2
+    volumes:
+      - ./2/wordpress:/var/www/html
+    networks:
+      - cliente-2
+      - rede-proxy
+
+
+  openssh-server:
+    build:
+      context: ./ssh
+      dockerfile: Dockerfile
+    container_name: openssh-server
+    hostname: openssh
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - SUDO_ACCESS=true
+      - USER_NAME=user
+      - USER_PASSWORD=testing
+      - PASSWORD_ACCESS=true
+    volumes:
+      - ssh:/config
+    ports:
+      - 2222:2222
+    networks:
+      - cliente-2
+
+  
 
 volumes:
-  wordpress:
-  db:
+  ssh:
+
+networks:
+  cliente-2:
+    driver: bridge
+  rede-proxy:
+    external: true

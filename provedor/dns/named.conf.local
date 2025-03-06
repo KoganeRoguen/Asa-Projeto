@@ -6,16 +6,37 @@
 // organization
 //include "/etc/bind/zones.rfc1918";
 
-zone "alisson.asa.br"{
+zone "neopolis.asa.br"{
     type master;
     file "/etc/bind/db.asa.br";
     allow-transfer {
         any;
     };
 };
-zone "cliente1.asa.br"{
+zone "amapa.asa.br"{
     type master;
-    file "/etc/bind/cliente1.asa.br";
+    file "/etc/bind/amapa.asa.br";
+    allow-transfer {
+        any;
+    };
+};
+zone "ipes.asa.br"{
+    type master;
+    file "/etc/bind/ipes.asa.br";
+    allow-transfer {
+        any;
+    };
+};
+zone "senna.asa.br"{
+    type master;
+    file "/etc/bind/senna.asa.br";
+    allow-transfer {
+        any;
+    };
+};
+zone "salgado-filho.asa.br"{
+    type master;
+    file "/etc/bind/salgado-filho.asa.br";
     allow-transfer {
         any;
     };
